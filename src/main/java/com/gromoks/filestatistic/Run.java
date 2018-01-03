@@ -1,16 +1,21 @@
 package com.gromoks.filestatistic;
 
-import com.gromoks.filestatistic.dao.io.FileParser;
+import com.gromoks.filestatistic.dao.config.JdbcConnection;
+import com.gromoks.filestatistic.dao.io.InputData;
+import com.gromoks.filestatistic.service.FileProcessing;
+import com.gromoks.filestatistic.dao.jdbc.JdbcStatisticDao;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
-public class Console {
+public class Run {
+
+    private static FileProcessing fileProcessing;
+
     public static void main(String[] args) {
         try {
             BufferedReader bufferedReader = new BufferedReader(new InputStreamReader(System.in));
@@ -19,10 +24,9 @@ public class Console {
             Path path = Paths.get(bufferedReader.readLine());
 
             if (Files.exists(path)) {
-                File file = new File(path.toFile().getAbsolutePath());
-                FileParser fileParser = new FileParser();
+                init();
                 String wordDelimiter = "\\s+";
-                fileParser.parse(file, wordDelimiter);
+                fileProcessing.process(path, wordDelimiter);
             } else {
                 System.out.println("Directory doesn't exists");
             }
@@ -30,5 +34,12 @@ public class Console {
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    private static void init() {
+        InputData inputData = new InputData();
+        JdbcConnection jdbcConnection = new JdbcConnection();
+        JdbcStatisticDao jdbcStatisticDao = new JdbcStatisticDao(jdbcConnection);
+        fileProcessing = new FileProcessing(inputData, jdbcStatisticDao);
     }
 }

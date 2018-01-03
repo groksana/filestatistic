@@ -16,7 +16,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 
-public class IJdbcFileStatisticDaoTest {
+public class JdbcStatisticDaoITest {
 
     @Test
     public void testAddStatistic() throws SQLException {
@@ -46,10 +46,10 @@ public class IJdbcFileStatisticDaoTest {
         String selectLineStatisticSQL = "SELECT COUNT(*) from FILE_INFO, LINE_INFO " +
                 "WHERE FILE_INFO.ID = LINE_INFO.FILE_ID AND FILE_INFO.FILE_NAME = ?";
 
-        JdbcFileStatisticDao jdbcFileStatisticDao = new JdbcFileStatisticDao();
-        jdbcFileStatisticDao.addStatistic(fileInfo, lineInfos);
-
         JdbcConnection jdbcConnection = new JdbcConnection();
+        JdbcStatisticDao jdbcStatisticDao = new JdbcStatisticDao(jdbcConnection);
+        jdbcStatisticDao.addStatistic(fileInfo, lineInfos);
+
         Connection connection = jdbcConnection.getConnection();
 
         PreparedStatement preparedStatement = null;
@@ -57,13 +57,13 @@ public class IJdbcFileStatisticDaoTest {
             preparedStatement = connection.prepareStatement(selectFileStatisticSQL);
             preparedStatement.setString(1, fileInfo.getFileName());
             ResultSet resultSet = preparedStatement.executeQuery();
-            int count  = resultSet.next() ? resultSet.getInt(1) : 0;
+            int count = resultSet.next() ? resultSet.getInt(1) : 0;
             assertEquals(1, count);
 
             preparedStatement = connection.prepareStatement(selectLineStatisticSQL);
             preparedStatement.setString(1, fileInfo.getFileName());
             resultSet = preparedStatement.executeQuery();
-            count  = resultSet.next() ? resultSet.getInt(1) : 0;
+            count = resultSet.next() ? resultSet.getInt(1) : 0;
             assertEquals(1, count);
 
             preparedStatement = connection.prepareStatement(deleteLineStatisticSQL);
