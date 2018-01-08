@@ -2,12 +2,22 @@ package com.gromoks.filestatistic.entity;
 
 import java.util.List;
 
-public class FileInfo {
+public class FileStatistic {
+    private int id;
     private String fileName;
     private List<String> longestWords;
     private List<String> shortestWords;
     private int length;
     private double averageWordLength;
+    private List<LineStatistic> lineStatistics;
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
+    }
 
     public String getFileName() {
         return fileName;
@@ -49,15 +59,32 @@ public class FileInfo {
         this.averageWordLength = averageWordLength;
     }
 
+    public List<LineStatistic> getLineStatistics() {
+        return lineStatistics;
+    }
+
+    public void setLineStatistics(List<LineStatistic> lineStatistics) {
+        this.lineStatistics = lineStatistics;
+    }
+
     @Override
     public String toString() {
-        return "FileInfo{" +
-                "fileName='" + fileName + '\'' +
+        return "FileStatistic{" +
+                "id=" + id +
+                ", fileName='" + fileName + '\'' +
                 ", longestWords=" + longestWords +
                 ", shortestWords=" + shortestWords +
                 ", length=" + length +
                 ", averageWordLength=" + averageWordLength +
+                ", lineStatistics=" + lineStatistics +
                 '}';
+    }
+
+    public void print() {
+        System.out.printf("\n%-20s %20s %20s", "File", "Length",
+                "LineCount");
+        System.out.printf("\n%-20.20s %20d %20d", fileName, length,
+                lineStatistics.size());
     }
 }
 

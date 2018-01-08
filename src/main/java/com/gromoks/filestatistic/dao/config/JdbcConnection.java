@@ -1,45 +1,39 @@
 package com.gromoks.filestatistic.dao.config;
 
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.sql.*;
+import com.gromoks.filestatistic.handler.ConnectionException;
+import com.gromoks.filestatistic.handler.FileLoadException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.SQLException;
 import java.util.Properties;
 
 public class JdbcConnection {
 
-    private Connection connection;
+    private final Logger log = LoggerFactory.getLogger(getClass());
 
     public Connection getConnection() {
-        FileInputStream fileInputStream = null;
-        try {
-            fileInputStream = new FileInputStream("src\\main\\resources\\db\\database.properties");
-        } catch (FileNotFoundException e) {
-            System.out.println("File database.properties is not found");
-        }
-
         Properties properties = new Properties();
-        try {
-            properties.load(fileInputStream);
+        try (InputStream inputStream = JdbcConnection.class.getClassLoader().getResourceAsStream("db/database.properties")) {
+            properties.load(inputStream);
         } catch (IOException e) {
-            System.out.println("File database.properties can't be loaded");
+            log.error("File database.properties can't be loaded: ", e);
+            throw new FileLoadException("File database.properties can't be loaded: " + e.getMessage());
         }
 
-        String driverClassName = (String) properties.get("jdbc.driverClassName");
-        String url = (String) properties.get("jdbc.url");
-        String username = (String) properties.get("jdbc.username");
-        String password = (String) properties.get("jdbc.password");
+        String url = properties.getProperty("jdbc.url");
+        String username = properties.getProperty("jdbc.username");
+        String password = properties.getProperty("jdbc.password");
 
-        try {
-            Class.forName(driverClassName);
-        } catch (ClassNotFoundException e) {
-            System.out.println("Driver Class can't be loaded");
-        }
-
+        Connection connection;
         try {
             connection = DriverManager.getConnection(url, username, password);
         } catch (SQLException e) {
-            System.out.println("Connection can't be get");
+            log.error("Connection can't be get", e);
+            throw new ConnectionException("Connection can't be get" + e.getMessage());
         }
 
         return connection;

@@ -2,7 +2,7 @@ package com.gromoks.filestatistic.entity;
 
 import java.util.List;
 
-public class LineInfo {
+public class LineStatistic {
     private int rowNumber;
     private List<String> longestWords;
     private List<String> shortestWords;
@@ -51,7 +51,7 @@ public class LineInfo {
 
     @Override
     public String toString() {
-        return "entity.LineInfo{" +
+        return "entity.LineStatistic{" +
                 "rowNumber=" + rowNumber +
                 ", longestWords=" + longestWords +
                 ", shortestWords=" + shortestWords +
